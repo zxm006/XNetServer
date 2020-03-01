@@ -1,6 +1,6 @@
 #pragma once
 #include "cmdtcpserver.h"
-#include "CritSec.h"
+#include <mutex>
 
 typedef enum {
     MTG_CREAT=0,		//正在连接
@@ -112,10 +112,8 @@ private:
     
     void  OnDispatchMtgCmd( MTG_CMD mtgCmd ,unsigned int& usrID,unsigned int& MtgType,const std::string &mtgid);
 	CmdTCPServer* m_pCmdTCPServer;
-    
 	CLIENTUSERINFOLIST_MAP m_UserInfoList;
     MTGINFOLIST_MAP m_Mtglist;
- 
 	SPEAKERLIST_MAP m_speakerList;
-    KCritSec m_mKCritSec;
+    std::recursive_mutex    m_mutex;
 };

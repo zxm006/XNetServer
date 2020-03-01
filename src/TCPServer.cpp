@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include "TCPServer.h"
-#include "AutoLock.h"
 #
 #ifdef WIN32
 #include<assert.h>
@@ -761,10 +760,10 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
     std::string strData = pPacket.GetString();
     
     if (strCMD == "LOGINSERVER") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         onLoginServer(ulClientID, pPacket);
     } else if (strCMD == "GETUSERLIST") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         std::string strLogin = "UpdateUserList";
         std::string strCMD = "UPDATEUSERLIST";
         KCmdPacketEx rPacket(strLogin.c_str(), (int)strLogin.length() + 1);
@@ -801,7 +800,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
         if (m_pCmdTCPServer)
             m_pCmdTCPServer->sendData(ulClientID, rPacket);
     } else if (strCMD == "VIDEOCALL") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         unsigned int ulPeerUserID = pPacket.GetAttrib("PEERUSERID").AsUnsignedLong();
         for (CLIENTUSERINFOLIST_MAP::iterator nextiter = m_UserInfoList.begin(); nextiter != m_UserInfoList.end(); nextiter++) {
             if (nextiter->first == ulPeerUserID) {
@@ -817,7 +816,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
         }
         
     } else if (strCMD == "INVITEMTGUSER") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         unsigned int ulUserId = pPacket.GetAttrib("PEERUSERID").AsUnsignedLong();
         if (m_pCmdTCPServer)
             m_pCmdTCPServer->sendData(ulUserId, pPacket);
@@ -828,7 +827,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
         unsigned int ulUserID = pPacket.GetAttrib("USERID").AsUnsignedLong();
         std::string ulUserName = pPacket.GetAttrib("USERNAME").AsString();
         if (isbroadcast) {
-            KAutoLock lock(m_mKCritSec);
+          std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
             std::string senddata = pPacket.GetAttrib("DATA").AsString();
             //Õ®±®∆‰À˚”√ªß
             for (CLIENTUSERINFOLIST_MAP::iterator nextiter = m_UserInfoList.begin(); nextiter != m_UserInfoList.end(); nextiter++) {
@@ -840,7 +839,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
                 }
             }
         } else {
-            KAutoLock lock(m_mKCritSec);
+          std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
             unsigned int ulPeerUserID = pPacket.GetAttrib("PEERUSERID").AsUnsignedLong();
             std::string senddata = pPacket.GetAttrib("DATA").AsString();
             //            printf("senddata = %s\n\r",senddata.c_str());
@@ -855,12 +854,12 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
             }
         }
     } else if (strCMD == "SENDVOICE") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         OnsendVoice(ulClientID, pPacket);
     }
     else if (strCMD == "USERMEDIASTATUS")
     {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         CLIENTUSERINFOLIST_MAP::iterator iter = m_UserInfoList.find(ulClientID);
         if (iter != m_UserInfoList.end()) {
             CLIENTUSERINFOLIST* pClientUserList = iter->second;
@@ -890,7 +889,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
             }
         }
     } else if (strCMD == "MTGCMD") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         MTG_CMD meetingCommond   = (MTG_CMD)pPacket.GetAttrib("MTGCMD").AsUnsignedLong();
         std::string strUserName = pPacket.GetAttrib("USERNAME").AsString();
         std::string strMtgid = pPacket.GetAttrib("MTGID").AsString();
@@ -904,7 +903,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
         OnDispatchMtgCmd(meetingCommond, ulClientID,ulMtgType,strMtgid);
         
     } else if (strCMD == "QUITSERVER") {
-        KAutoLock lock(m_mKCritSec);
+      std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
         //        printf("QUITSERVER\n\r");
         onQuitServer(ulClientID);
     }
@@ -917,7 +916,7 @@ void TCPServer::ClientConnected(unsigned int ulClientID, unsigned int ulClientRe
 
 void TCPServer::ClientDisconnected(unsigned int ulClientID)
 {
-    KAutoLock lock(m_mKCritSec);
+  std::lock_guard<std::recursive_mutex> lock_guard(m_mutex);
     
     CLIENTUSERINFOLIST_MAP::iterator iter = m_UserInfoList.find(ulClientID);
     if (iter != m_UserInfoList.end())
