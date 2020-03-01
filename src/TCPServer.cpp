@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "TCPServer.h"
-#
+#include "XLog.h"
 #ifdef WIN32
 #include<assert.h>
 #else
@@ -147,12 +147,13 @@ bool TCPServer:: DestroyMtg(const std::string &mtgid,unsigned int& usrID,std::st
 bool TCPServer::JoinMtg(const std::string &mtgid,unsigned int& ulClientID,unsigned int& MtgType,std::string &info)
 {
     //根据会议id找到会议
-    MTGINFOLIST_MAP::iterator mtgIter = m_Mtglist.find(mtgid);
+    auto  mtgIter= m_Mtglist.find(mtgid);
     
     if (mtgIter != m_Mtglist.end()) {
         //找到当前用户的信息
         CLIENTUSERINFOLIST_MAP::iterator userIter = m_UserInfoList.find(ulClientID);
-        if(mtgIter->second->userList.size()<mtgIter->second->ulmaxMembers&&userIter!=m_UserInfoList.end()) {
+        if(((int)mtgIter->second->userList.size() < mtgIter->second->ulmaxMembers)&&userIter!=m_UserInfoList.end()) {
+          
             std::string strLogin = "MTGCMDREQ";
             KCmdPacketEx rPacket(strLogin.c_str(), (int)strLogin.length() + 1);
             std::string strCMD = "MTGCMDREQ";
@@ -233,14 +234,13 @@ bool TCPServer::JoinMtg(const std::string &mtgid,unsigned int& ulClientID,unsign
 
 bool TCPServer::ExitMtg(const std::string &mtgid,unsigned int& ulClientID,std::string &info)
 {
-    MTGINFOLIST_MAP::iterator Mtgiter = m_Mtglist.find(mtgid);
-    
-    if (Mtgiter != m_Mtglist.end()) {
-        CLIENTUSERINFOLIST_MAP::iterator useriter = Mtgiter->second->userList.find(ulClientID);
-        if (useriter!=Mtgiter->second->userList.end()) {
+    auto  mtgIter= m_Mtglist.find(mtgid);
+    if (mtgIter != m_Mtglist.end()) {
+        CLIENTUSERINFOLIST_MAP::iterator useriter = mtgIter->second->userList.find(ulClientID);
+        if (useriter!=mtgIter->second->userList.end()) {
             std::string username = useriter->second->strUserName;
-            CLIENTUSERINFOLIST_MAP::iterator it = Mtgiter->second->userList.begin();
-            while (it != Mtgiter->second->userList.end()) {
+            CLIENTUSERINFOLIST_MAP::iterator it = mtgIter->second->userList.begin();
+            while (it != mtgIter->second->userList.end()) {
                 std::string strLogin = "MTGCMD";
                 KCmdPacketEx rPacket(strLogin.c_str(), (int)strLogin.length() + 1);
                 std::string strCMD = "MTGCMD";
@@ -257,12 +257,12 @@ bool TCPServer::ExitMtg(const std::string &mtgid,unsigned int& ulClientID,std::s
                 delete pUser;
                 pUser =NULL;
             }
-            Mtgiter->second->userList.erase(useriter);
-            if (Mtgiter->second->userList.size()<=0) {
-                MTGINFOLIST* pMtgInfoList = Mtgiter->second;
+            mtgIter->second->userList.erase(useriter);
+            if (mtgIter->second->userList.size()<=0) {
+                MTGINFOLIST* pMtgInfoList = mtgIter->second;
                 delete pMtgInfoList;
                 pMtgInfoList = NULL;
-                m_Mtglist.erase(Mtgiter);
+                m_Mtglist.erase(mtgIter);
             }
             
             info ="退出成功.";
@@ -406,15 +406,12 @@ void TCPServer::onLoginServer(unsigned int& ulClientID, KCmdPacketEx& pPacket)
         std::string stGroup = "GROUPID";
         rPacket.SetAttrib(stGroup, itspeaker->second->strGroupId);
         rPacket.SetAttribBL("ISINROOM", false);
-        
         std::string strDATA = "DATA";
         rPacket.SetAttrib(strDATA, "AUDIO_SEND_DISABLE");
         if (m_pCmdTCPServer)
             m_pCmdTCPServer->sendData(ulClientID, rPacket);
-        
     }
-    
-    //Õ®±®∆‰À˚”√ªß
+
     for (CLIENTUSERINFOLIST_MAP::iterator iter = m_UserInfoList.begin(); iter != m_UserInfoList.end(); iter++) {
         std::string strLogin = "RemoteLoginServered";
         KCmdPacketEx rPacket(strLogin.c_str(), (int)strLogin.length() + 1);
@@ -506,8 +503,6 @@ void TCPServer::onReLoginServer(  unsigned int& ulClientID )
             }
         }
         
-        //Õ®±®∆‰À˚”√ªß
-        
         for (CLIENTUSERINFOLIST_MAP::iterator nextiter = m_UserInfoList.begin(); nextiter != m_UserInfoList.end(); nextiter++) {
             std::string strLogin = "RemoteQuitServered";
             KCmdPacketEx rPacket(strLogin.c_str(), (int)strLogin.length() + 1);
@@ -517,7 +512,6 @@ void TCPServer::onReLoginServer(  unsigned int& ulClientID )
             rPacket.SetAttrib(strname, strUserName);
             std::string strUserId = "USERID";
             rPacket.SetAttribUL(strUserId, ulClientID);
-            
             
             unsigned int ulRemoteClientID = nextiter->first;
             if (m_pCmdTCPServer&&strAddress== nextiter->second->strAddress&&ulRemoteClientID!=ulClientID)
@@ -804,10 +798,10 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
         unsigned int ulPeerUserID = pPacket.GetAttrib("PEERUSERID").AsUnsignedLong();
         for (CLIENTUSERINFOLIST_MAP::iterator nextiter = m_UserInfoList.begin(); nextiter != m_UserInfoList.end(); nextiter++) {
             if (nextiter->first == ulPeerUserID) {
-                //            printf("Send VIDEOCALL to Client %lu \n",ulPeerUserID);
+                //            printf("Send VIDEOCALL to Client %u \n",ulPeerUserID);
                 unsigned int ulUserId = nextiter->first;
                 if (m_pCmdTCPServer) {
-                    //                    printf("Send VIDEOCALL to Client %lu \n", ulPeerUserID);
+                    // printf("Send VIDEOCALL to Client %u \n", ulPeerUserID);
                     m_pCmdTCPServer->sendData(ulUserId, pPacket);
                 }
                 
@@ -911,7 +905,7 @@ void TCPServer::OnDispatchCmd(unsigned int& ulClientID, KCmdPacketEx& pPacket)
 
 void TCPServer::ClientConnected(unsigned int ulClientID, unsigned int ulClientRemoteIP)
 {
-    // printf("OnXNetServerClientConnected ulClientID=%lu ulClientRemoteIP=%lu\n\r", ulClientID, ulClientRemoteIP);
+    DBG_LOG("[TCPServer]: OnXNetServerClientConnected ulClientID=%u, ulClientRemoteIP=%u", ulClientID, ulClientRemoteIP);
 }
 
 void TCPServer::ClientDisconnected(unsigned int ulClientID)
@@ -930,7 +924,7 @@ void TCPServer::ClientDisconnected(unsigned int ulClientID)
             
         }
         
-        //         printf("OnXNetServerClientDisconnected ulClientID=%lu strUserNam = %s \n\r", ulClientID, strUserName.c_str());
+        //         printf("OnXNetServerClientDisconnected ulClientID=%u strUserNam = %s \n\r", ulClientID, strUserName.c_str());
         
         CLIENTUSERINFOLIST* pClientUserList = iter->second;
         assert(pClientUserList);

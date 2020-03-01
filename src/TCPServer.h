@@ -1,5 +1,5 @@
 #pragma once
-#include "cmdtcpserver.h"
+#include "CmdTCPServer.h"
 #include <mutex>
 
 typedef enum {
@@ -19,19 +19,19 @@ typedef enum {
 
 typedef struct _CLIENTUSERINFOLIST
 {
-	_CLIENTUSERINFOLIST():strUserName("")
-		,ulUserID(0)
-		,ulUserAudioID(0)
-		,uiVideoCanSee(0)
-		,strAddress("")
-		,strGroupId("")
-       ,strMtgId("")
-       ,strHeadUrl ("")
-       ,strNickName("")
-       ,ulLatitude(0)
-       ,ulLongitude(0)
-       ,ulMtgTime(0)
-       ,ulLoginTime()
+    _CLIENTUSERINFOLIST():strUserName("")
+    ,strHeadUrl ("")
+    ,strNickName("")
+    ,ulLatitude(0)
+    ,ulLongitude(0)
+    ,ulUserID(0)
+    ,ulUserAudioID(0)
+    ,ulMtgTime(0)
+    ,ulLoginTime()
+    ,uiVideoCanSee(0)
+    ,strAddress("")
+    ,strGroupId("")
+    ,strMtgId("")
     {}
 	std::string strUserName;
     std::string strHeadUrl;

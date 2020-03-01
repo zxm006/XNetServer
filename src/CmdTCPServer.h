@@ -1,5 +1,5 @@
 #pragma once
-#include "cmdpacket.h"
+#include "CmdPacket.h"
 
 class CServer;
 
@@ -10,11 +10,11 @@ public:
 	virtual~CmdTCPServerCallback(void){};
 public:
 	//返回客户端数据
-	virtual void OnDispatchCmd(unsigned int & ulClientID,KCmdPacketEx& pPacket){};
+	virtual void OnDispatchCmd(unsigned int & /*ulClientID*/,KCmdPacketEx& /*pPacket*/){};
 	//返回客户端连接消息
-	virtual void ClientConnected(unsigned int ulClientID,unsigned int ulClientRemoteIP){};
+	virtual void ClientConnected(unsigned int /*ulClientID*/,unsigned int /*ulClientRemoteIP*/){};
 	//返回客户端断开消息
-	virtual void ClientDisconnected(unsigned int ulClientID){};
+	virtual void ClientDisconnected(unsigned int /*ulClientID*/){};
 };
 
 class CmdTCPServer

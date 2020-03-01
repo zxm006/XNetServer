@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "cmdpacket.h"
+#include "CmdPacket.h"
 #include <iostream>
 
 #ifdef _DEBUG
@@ -83,7 +83,7 @@ std::string LONG2STR(long value)
 std::string ULONG2STR(unsigned int value)
 {
 	char tmp[100];
-	sprintf(tmp,"%lu",value);
+	sprintf(tmp,"%u",value);
 	return tmp;
 }
 
@@ -212,7 +212,7 @@ bool USHORT2BOOL(unsigned short value)
 std::string ULONG2HEX(unsigned int value)
 {
 	char tmp[100];
-	sprintf(tmp,"%lX",value);
+    sprintf(tmp,"%X",value);
 	return tmp;
 }
 
@@ -220,7 +220,7 @@ std::string ULONG2HEX(unsigned int value)
 unsigned int HEX2ULONG(const std::string& value)
 {
 	unsigned int ulValue=0;
-	sscanf(value.c_str(),"%lX",&ulValue);
+    sscanf(value.c_str(),"%X",&ulValue);
 	return ulValue;
 }
 
@@ -261,7 +261,7 @@ STRING_MAP_EX StrSplitEx(const std::string& data,const std::string& token)
 {
 	STRING_MAP_EX mapStringSplit;
 	STRING_MAP mapSegment = StrSplit(data,token);
-	for(int i=0;i<mapSegment.size();i++)
+	for(size_t i=0;i<mapSegment.size();i++)
 	{
 		std::string seg = mapSegment[i];
 		STRING_MAP b = StrSplit(seg,"=");
@@ -314,7 +314,7 @@ void CommandStringDecode(const std::string& in,std::string& out)
 	{
 		std::basic_string <char>::size_type index;
 		index=out.find("&space;");
-		if(index!=-1)
+		if(index!= out.npos)
 		{
 			out.replace(index,7," ");
 		}
@@ -329,7 +329,7 @@ void CommandStringDecode(const std::string& in,std::string& out)
 	{
 		std::basic_string <char>::size_type index;
 		index=out.find("&equal;");
-		if(index!=-1)
+		if(index!= out.npos)
 		{
 			out.replace(index,7,"=");
 		}
@@ -343,7 +343,7 @@ void CommandStringDecode(const std::string& in,std::string& out)
 	{
 		std::basic_string <char>::size_type index;
 		index=out.find("&amp;");
-		if(index!=-1)
+		if(index!= out.npos)
 		{
 			out.replace(index,5,"&");
 		}
@@ -357,7 +357,7 @@ void CommandStringDecode(const std::string& in,std::string& out)
 	{
 		std::basic_string <char>::size_type index;
 		index=out.find("&return;");
-		if(index!=-1)
+		if(index != out.npos)
 		{
 			out.replace(index,8,"\r");
 		}
@@ -371,7 +371,7 @@ void CommandStringDecode(const std::string& in,std::string& out)
 	{
 		std::basic_string <char>::size_type index;
 		index=out.find("&newline;");
-		if(index!=-1)
+		if(index != out.npos)
 		{
 			out.replace(index,9,"\n");
 		}

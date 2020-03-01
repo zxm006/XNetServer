@@ -7,14 +7,10 @@
 #include "TCPServer.h"
 #include "aes.h"
 #include <sys/time.h>
-
 //#include "CheckAccredit.h"
-
-
 static bool isencrypt =  false;
 TCPServer tCServer;
 unsigned int  GetCurrentTimeStamp(void);
-
 #ifndef WIN32
 #include <sys/types.h>
 #include <sys/resource.h> 
@@ -24,7 +20,6 @@ unsigned int  GetCurrentTimeStamp(void);
 
 void DaemonInit(void)
 {
-    
     signal(SIGTTOU,SIG_IGN);
     signal(SIGTTIN,SIG_IGN);
     signal(SIGTSTP,SIG_IGN);
@@ -65,36 +60,24 @@ void DaemonInit(void)
 #include<atlstr.h>
 #endif
 
-  #ifndef WIN32
+#ifndef WIN32
 //  void checkExp(int exp)
 //  {
-//
-//
 //      CheckAccredit credite;
 //      bool ret= false;
 //      std::string info = "";
 //      unsigned int   ulexpdate;
 //      credite.check(ret,ulexpdate, info);
-//      if (!ret)
-//      {
+//      if (!ret) {
 //       tCServer.Stop();
-//
-//
-//          usleep(20000000/10);
-//
-//
-//           printf("服务器证书失效:\"%s\"",info.c_str());
+//       usleep(20000000/10);
+//        printf("服务器证书失效:\"%s\"",info.c_str());
 //      exit(0);
 //
-//      }
-//      else
-//      {
-//
+//      } else {
 //             alarm(60*60*24);
 //      }
-//
 //}
-
 
 #else
 
@@ -159,9 +142,7 @@ struct timeval tv;
         clock = mktime(&tm);  
         tv.tv_sec = clock;  
         tv.tv_usec = wtm.wMilliseconds * 1000;  
-        return ((unsigned int long)tv.tv_sec * 1000 + (unsigned int long)tv.tv_usec / 1000);  
-
-   // return GetTickCount64();//∫¡√Î
+        return ((unsigned int long)tv.tv_sec * 1000 + (unsigned int long)tv.tv_usec / 1000);
 #else
     struct timeval now;
     gettimeofday(&now,NULL);
@@ -209,7 +190,7 @@ int main(int argc, char* argv[])
     {
         
 #ifndef WIN32
-            DaemonInit();
+//        DaemonInit();
         /////定时检查
 //      signal(SIGALRM, checkExp);
 //        alarm(60*60*24);
@@ -220,8 +201,6 @@ int main(int argc, char* argv[])
         // 创建线程
         HANDLE hThread = CreateThread(NULL, 0, ThreadProc, 0, 0, &dwThreadId);
 #endif
-        
-        
    tCServer.Static(isencrypt);
 //       printf("%s 启动成功sucess",info.c_str() );
         while (true)
@@ -233,7 +212,5 @@ int main(int argc, char* argv[])
             #endif
         }
     }
- 
- 
   return 0;
 }

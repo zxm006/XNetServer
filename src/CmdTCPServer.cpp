@@ -81,14 +81,14 @@ void CServer::OnXNetServerClientConnected(unsigned int ulClientID,unsigned int u
 {
     m_pCallback.ClientConnected(ulClientID, ulClientRemoteIP);
     m_MapClientID[ulClientID]=ulClientID;
-//    printf("OnXNetServerClientConnected ulClientID=%lu ulClientRemoteIP=%lu\n",ulClientID,ulClientRemoteIP);
+//    printf("OnXNetServerClientConnected ulClientID=%u ulClientRemoteIP=%u\n",ulClientID,ulClientRemoteIP);
 }
 
 void CServer::OnXNetServerClientDisconnected(unsigned int ulClientID)
 {
     m_MapClientID.erase(ulClientID);
     m_pCallback.ClientDisconnected(ulClientID);
-//     printf("OnXNetServerClientDisconnected ulClientID=%lu \n",ulClientID);
+//     printf("OnXNetServerClientDisconnected ulClientID=%u \n",ulClientID);
 }
 
 void CServer::OnXNetServerReceivedFromClient(unsigned int ulClientID,const char*pData, int nLen)
