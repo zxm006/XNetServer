@@ -1,4 +1,2 @@
-# MediaServer
-流媒体服务器
- 测试文件大发
 # XNetServer
+音视频通话服务器，跨平台
