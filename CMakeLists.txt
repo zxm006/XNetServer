@@ -31,8 +31,8 @@ SET (ALL_SRCS
 
 # aux_source_directory(./src DIR_EXE_SRCS)
 
-     set(3RD_LIBS XNet)
-     set(SYS_LIBS pthread)
+    set(3RD_LIBS XNet)
+    set(SYS_LIBS pthread)
     set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -fPIC -std=c99")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -fPIC -std=c++11")
     set(CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO} -fPIC -Wno-unused -std=c99")
