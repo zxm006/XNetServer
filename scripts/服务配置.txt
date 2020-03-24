@@ -1,0 +1,4 @@
+
+crontab -e
+
+* * * * * /usr/local/XNetServer/sbin/monitor.sh

@@ -9,6 +9,7 @@
 #include "../include/XNet/XNetCore.h"
 #include "../include/XNet/XNetServer.h"
 #include "CmdTCPServer.h"
+#include <string.h>
 //#include "aes.h"
 //
 //#define CBC 1

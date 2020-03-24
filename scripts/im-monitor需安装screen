@@ -1,0 +1,14 @@
+先安装screen
+
+
+apt-get install screen
+
+再建一个会话
+screen -dmS Urumchi
+
+再看这个会话是事成功
+screen -list
+
+连上这个会话
+screen -r Urumchi
+

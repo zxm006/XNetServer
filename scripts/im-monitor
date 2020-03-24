@@ -1,0 +1,76 @@
+#!/bin/sh
+#
+# Server monitor
+#
+################################################################################
+#
+
+# spawnDaemon
+#
+# spawn daemon process
+#
+
+server_log_dir="/home/tmp.log"
+server_name="app-server"
+server_path="/home/app-server"
+
+spawnDaemon()
+{
+    local process=$1
+    local cmd=$2
+    
+    local rc=`ps -e | grep $process | grep -v grep`
+  
+    if [ -z "$rc" ] 
+    then
+    	echo "Server start begin" >> ${server_log_dir}
+	date +"%Y-%m-%d %H:%M:%S" >> ${server_log_dir}
+
+        eval $cmd
+    fi
+
+    #sleep 2
+}
+
+
+#
+# maintainserver
+#
+mainServer()
+{    
+   spawnDaemon ${server_name} "nohup ${server_path} &" 1
+		        
+    #-- im.core -----------------------------------------------------------------------------------------------
+    local rcimcore=`ps -e | grep ${server_name} | grep -v grep  | awk '{print $4}'`
+    processcounter=0
+    for i in ${rcimcore[@]}
+    do
+        let "processcounter++"
+    done
+
+	if [ "$processcounter" -ne 1 ]
+	then
+		if [ -n "$rcimcore" ] 
+    		then
+    			killall -9 ${server_name}
+    		fi		    
+		    
+	spawnDaemon ${server_name} "nohup ${server_path} &" 1
+	fi
+		    
+}
+
+########################################################
+#
+# main routine
+#
+########################################################
+
+ulimit -c unlimited
+
+while [ 1 ]
+do
+    mainServer
+
+    sleep 1
+done
