@@ -1,4 +1,4 @@
-# XNetServer
+# XNetServer  利用libXNet.a库实现视频会议服务器
 音视频通话服务器，跨平台
 1.编译步骤
 mkdir build  -> cd build  -> cmake ..  ->make
